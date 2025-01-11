@@ -12,28 +12,35 @@ struct ContentView: View {
         GridItem(.flexible()),
         GridItem(.flexible()),
         GridItem(.flexible()),
-        GridItem(.flexible()),
     ]
     var body: some View {
-        // Use LazyVGrid for vertical grid layout
+        VStack {
+            Text("The Square Game")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .padding(.top, 20)
+            
+        // Use LazyVGrid for a 3x3 grid layout
         ScrollView {
-            LazyVGrid(columns: columns, spacing: 20) {
-                ForEach(0..<8) { index in
+            LazyVGrid(columns: columns, spacing: 30) {
+                    ForEach(0..<9) { index in
                     Button(action: {
-                        // Handle button action
-                        print("Button \(index + 1) tapped")
-                    }) {
-                        Text("Button \(index + 1)")
+                    // Handle button action
+                    print("Button \(index + 1) tapped")
+                        }) {
+                        Text("")
                             .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color.blue)
+                            .frame(maxWidth: .infinity, minHeight: 130)
+                            .background(Color.gray)
                             .foregroundColor(.white)
                             .cornerRadius(10)
+                        }
                     }
                 }
+                .padding()
+                }
             }
-            .padding()
-        }
+        .padding()
     }
 }
 
