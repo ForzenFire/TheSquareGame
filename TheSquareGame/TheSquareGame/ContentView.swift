@@ -8,39 +8,78 @@
 import SwiftUI
 
 struct ContentView: View {
-    let columns: [GridItem] = [
-        GridItem(.flexible()),
-        GridItem(.flexible()),
-        GridItem(.flexible()),
-    ]
+    // Define colors and grid setup
+    let colors: [Color] = [.red, .blue, .green, .yellow, .orange, .purple, .pink, .gray]
+    @State private var buttonColors: [Color] = Array(repeating: .clear, count: 9)
+    @State private var firstSelectedIndex: Int? = nil
+    @State private var secondSelectedIndex: Int? = nil
+
     var body: some View {
         VStack {
             Text("The Square Game")
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .padding(.top, 20)
-            
-        // Use LazyVGrid for a 3x3 grid layout
-        ScrollView {
-            LazyVGrid(columns: columns, spacing: 30) {
-                    ForEach(0..<9) { index in
+
+            // LazyVGrid to create a 3x3 grid
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
+                ForEach(0..<9, id: \.self) { index in
                     Button(action: {
-                    // Handle button action
-                    print("Button \(index + 1) tapped")
-                        }) {
-                        Text("")
-                            .padding()
-                            .frame(maxWidth: .infinity, minHeight: 130)
-                            .background(Color.gray)
-                            .foregroundColor(.white)
+                        handleButtonTap(at: index)
+                    }) {
+                        Rectangle()
+                            .fill(buttonColors[index])
+                            .frame(width: 80, height: 80)
                             .cornerRadius(10)
-                        }
                     }
                 }
-                .padding()
-                }
             }
+            .padding()
+            .onAppear {
+                assignRandomColors()
+            }
+        }
         .padding()
+    }
+    
+    // Assign random colors to all buttons
+    func assignRandomColors() {
+        for i in 0..<buttonColors.count {
+            buttonColors[i] = colors.randomElement() ?? .clear
+        }
+    }
+
+    // Handle button tap
+    func handleButtonTap(at index: Int) {
+        // If this is the first button clicked
+        if firstSelectedIndex == nil {
+            firstSelectedIndex = index
+        }
+        // If this is the second button clicked
+        else if secondSelectedIndex == nil {
+            secondSelectedIndex = index
+            checkMatch()
+        }
+    }
+    
+    // Check if selected colors match
+    func checkMatch() {
+        guard let firstIndex = firstSelectedIndex, let secondIndex = secondSelectedIndex else { return }
+        
+        if buttonColors[firstIndex] == buttonColors[secondIndex] {
+            // Match found, clear the colors and assign new colors
+            buttonColors[firstIndex] = .clear
+            buttonColors[secondIndex] = .clear
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                buttonColors[firstIndex] = colors.randomElement() ?? .clear
+                buttonColors[secondIndex] = colors.randomElement() ?? .clear
+            }
+        }
+        
+        // Reset selection
+        firstSelectedIndex = nil
+        secondSelectedIndex = nil
     }
 }
 
