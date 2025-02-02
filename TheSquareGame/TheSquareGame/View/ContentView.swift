@@ -8,13 +8,27 @@ import SwiftUI
 
 struct ContentView: View {
     let level: String
-    @StateObject private var viewModel = GameViewModel()
+    @StateObject private var viewModel: GameViewModel
 
-    let columns: [GridItem] = [
-        GridItem(.flexible()),
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
+    let columns: [GridItem]
+
+    init(level: String) {
+        self.level = level
+        _viewModel = StateObject(wrappedValue: GameViewModel(level: level))
+
+        let columnCount: Int
+        switch level {
+        case "Easy":
+            columnCount = 3
+        case "Medium":
+            columnCount = 4
+        case "Hard":
+            columnCount = 5
+        default:
+            columnCount = 3
+        }
+        columns = Array(repeating: GridItem(.flexible()), count: columnCount)
+    }
 
     var body: some View {
         VStack {
@@ -30,14 +44,14 @@ struct ContentView: View {
             }
             
             ScrollView {
-                LazyVGrid(columns: columns, spacing: 20) {
-                    ForEach(0..<9, id: \.self) { index in
+                LazyVGrid(columns: columns, spacing: 10) {
+                    ForEach(0..<viewModel.gridSize, id: \.self) { index in
                         Button(action: {
                             viewModel.handleButtonTap(at: index)
                         }) {
                             Rectangle()
-                                .fill(viewModel.buttonColors[index])
-                                .frame(width: 80, height: 80)
+                                .fill(viewModel.hiddenColors[index] ? Color.gray : viewModel.buttonColors[index])
+                                .frame(width: 60, height: 60)
                                 .cornerRadius(10)
                         }
                         .disabled(viewModel.isDisabled)
